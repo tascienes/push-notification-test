@@ -50,20 +50,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
-    super.initState();git 
+    super.initState();
     LocalNotificationService.initialize(context);
 
     FirebaseMessaging.instance.requestPermission().then((value) {
       print(value);
     });
     FirebaseMessaging.instance.getToken().then((token) {
-      print(token);
-    });
-    FirebaseMessaging.instance.getAPNSToken().then((APNStoken) {
-      print(APNStoken);
+      print('token : $token');
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
+      print('getInitialMessage : $message');
       if (message != null) {
         final routeFromMessage = message.data['route'];
         Navigator.of(context).pushNamed(routeFromMessage);
@@ -72,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     /// only foreground work
     FirebaseMessaging.onMessage.listen((message) {
+      print('onMessage : $message');
       if (message.notification != null) {
         print(message.notification!.body);
         print(message.notification!.title);
@@ -82,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ///when the app is in background but opened and user taps
     ///on the notification
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('onMessageOpenedApp : $message');
       final routeFromMessage = message.data['route'];
       if (routeFromMessage != null) {
         Navigator.of(context).pushNamed(routeFromMessage);
