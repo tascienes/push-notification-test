@@ -10,6 +10,7 @@ import 'green_page.dart';
 Future<void> backgroundHandler(RemoteMessage message) async {
   print(message.data.toString());
   print(message.notification!.title);
+  LocalNotificationService.display(message);
 }
 
 void main() async {
