@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationPlugin =
@@ -30,8 +36,19 @@ class LocalNotificationService {
     print('Token : : : ' + token.toString());
   }
 
-  static void display(RemoteMessage message) {
+  static Future<void> display(RemoteMessage message) async {
     try {
+      List<IOSNotificationAttachment> iosAttachment = [];
+
+      String? bigPicturePath;
+      var bigPicture = message.data['bigPicture'];
+      if (bigPicture != null && bigPicture.isNotEmpty) {
+        String bigPictureName = Uuid().v4();
+        bigPicturePath =
+            await _downloadAndSaveFile(bigPicture, '$bigPictureName.jpg');
+      }
+      iosAttachment.add(IOSNotificationAttachment(bigPicturePath!));
+
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
       final NotificationDetails notificationDetails = NotificationDetails(
@@ -43,7 +60,11 @@ class LocalNotificationService {
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: IOSNotificationDetails(),
+        iOS: IOSNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          attachments: iosAttachment,
+        ),
       );
       _notificationPlugin.show(
         id,
@@ -54,6 +75,34 @@ class LocalNotificationService {
       );
     } catch (e) {
       print('Error : : : $e');
+    }
+  }
+
+  static Future<String?> _downloadAndSaveFile(
+      String url, String? fileName) async {
+    try {
+      var directory = await getTemporaryDirectory();
+      var filePath = '${directory.path}/$fileName';
+      var file = File(filePath);
+      Response<List<int>> response = await Dio()
+          .get<List<int>>(url,
+              options: Options(
+                  responseType:
+                      ResponseType.bytes) // // set responseType to `bytes`
+              )
+          .catchError((onError) {
+        print(onError);
+      });
+
+      if (response.statusCode == HttpStatus.ok) {
+        if (response.data != null) await file.writeAsBytes(response.data!);
+        return filePath;
+      }
+      print("File path : $filePath");
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 }
