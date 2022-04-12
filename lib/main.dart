@@ -10,10 +10,6 @@ import 'green_page.dart';
 
 /// Receive message when app is background solution for on message
 Future<void> backgroundHandler(RemoteMessage message) async {
-  print(message.data.toString());
-  print(message.notification!.title);
-  // LocalNotificationService.display(message);
-
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   print('Handling a background message ${message.messageId}');
@@ -21,11 +17,6 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   try {
     await Firebase.initializeApp();
     LocalNotificationService.initialize();
-
-    var messageData = message.data;
-    var jsonData = messageData['content'];
-    var content = jsonDecode(jsonData);
-    if (content == null) return;
 
     await LocalNotificationService.display(message);
   } catch (e) {
