@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,25 @@ import 'green_page.dart';
 Future<void> backgroundHandler(RemoteMessage message) async {
   print(message.data.toString());
   print(message.notification!.title);
-  LocalNotificationService.display(message);
+  // LocalNotificationService.display(message);
+
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  print('Handling a background message ${message.messageId}');
+
+  try {
+    await Firebase.initializeApp();
+    LocalNotificationService.initialize();
+
+    var messageData = message.data;
+    var jsonData = messageData['content'];
+    var content = jsonDecode(jsonData);
+    if (content == null) return;
+
+    await LocalNotificationService.display(message);
+  } catch (e) {
+    print(e);
+  }
 }
 
 void main() async {
@@ -52,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    LocalNotificationService.initialize(context);
+    LocalNotificationService.initialize();
 
     FirebaseMessaging.instance.requestPermission().then((value) {
       print(value);

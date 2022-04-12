@@ -12,7 +12,7 @@ class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationPlugin =
       FlutterLocalNotificationsPlugin();
 
-  static void initialize(BuildContext context) async {
+  static void initialize(/* BuildContext context */) async {
     final InitializationSettings initializationSettings =
         InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -27,7 +27,8 @@ class LocalNotificationService {
       initializationSettings,
       onSelectNotification: (route) async {
         if (route != null) {
-          Navigator.of(context).pushNamed(route);
+          // Navigator.of(context).pushNamed(route);
+          print('NAVIGATING @@@@ ::: $route');
         }
       },
     );
@@ -39,7 +40,6 @@ class LocalNotificationService {
   static Future<void> display(RemoteMessage message) async {
     try {
       List<IOSNotificationAttachment> iosAttachment = [];
-
       String? bigPicturePath;
       var bigPicture = message.data['bigPicture'];
       if (bigPicture != null && bigPicture.isNotEmpty) {
@@ -86,10 +86,7 @@ class LocalNotificationService {
       var file = File(filePath);
       Response<List<int>> response = await Dio()
           .get<List<int>>(url,
-              options: Options(
-                  responseType:
-                      ResponseType.bytes) // // set responseType to `bytes`
-              )
+              options: Options(responseType: ResponseType.bytes))
           .catchError((onError) {
         print(onError);
       });
