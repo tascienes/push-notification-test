@@ -17,6 +17,7 @@ exports.sendHttpPushNotification = functions.https.onRequest((req, res) => {
     data: {
       "click_action": "FLUTTER_NOTIFICATION_CLICK",
       "route": "red",
+      "bigPicture": imageUrl,
     },
     android: {
       priority: "high",
@@ -24,6 +25,16 @@ exports.sendHttpPushNotification = functions.https.onRequest((req, res) => {
         imageUrl: imageUrl,
         icon: "stock_ticker_update",
         color: "#f45342",
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          "contentAvailable": true,
+        },
+      },
+      fcm_options: {
+        image: imageUrl,
       },
     },
     topic: "myTopic",
