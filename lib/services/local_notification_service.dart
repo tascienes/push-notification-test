@@ -57,6 +57,16 @@ class LocalNotificationService {
               'This channel is used for important notifications.',
           importance: Importance.max,
           priority: Priority.high,
+          styleInformation: BigPictureStyleInformation(
+            FilePathAndroidBitmap(bigPicturePath),
+            contentTitle: message.notification?.title,
+            largeIcon: FilePathAndroidBitmap(bigPicturePath),
+            summaryText: message.notification?.body,
+            htmlFormatTitle: true,
+            htmlFormatContent: true,
+            htmlFormatContentTitle: true,
+            htmlFormatSummaryText: true,
+          ),
         ),
         iOS: IOSNotificationDetails(
           presentAlert: true,

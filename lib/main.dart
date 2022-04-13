@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -80,12 +79,22 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
+    //  if (!kIsWeb) {
+    //   await FirebaseMessaging.instance
+    //       .setForegroundNotificationPresentationOptions(
+    //     alert: true,
+    //     badge: true,
+    //     sound: true,
+    //   );
+    // }
+
     /// only foreground work
     FirebaseMessaging.onMessage.listen((message) {
       print('onMessage : $message');
       if (message.notification != null) {
         print(message.notification!.body);
         print(message.notification!.title);
+        print('data : ${message.data['bigPicture']}');
       }
       LocalNotificationService.display(message);
     });
