@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -63,10 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     LocalNotificationService.initialize();
+    LocalNotificationService.requestPermissions();
 
-    FirebaseMessaging.instance.requestPermission().then((value) {
-      print(value);
-    });
+    // FirebaseMessaging.instance.requestPermission().then((value) {
+    //   print(value);
+    // });
+
     FirebaseMessaging.instance.getToken().then((token) {
       print('token : $token');
     });

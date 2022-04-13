@@ -35,6 +35,17 @@ class LocalNotificationService {
     print('Token : : : ' + token.toString());
   }
 
+  static void requestPermissions() {
+    _notificationPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+  }
+
   static Future<void> display(RemoteMessage message) async {
     try {
       List<IOSNotificationAttachment> iosAttachment = [];
