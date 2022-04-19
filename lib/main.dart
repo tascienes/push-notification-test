@@ -14,14 +14,14 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   print('Handling a background message ${message.messageId}');
 
-  try {
-    await Firebase.initializeApp();
-    LocalNotificationService.initialize();
+  // try {
+  //   await Firebase.initializeApp();
+  //   LocalNotificationService.initialize();
 
-    await LocalNotificationService.display(message);
-  } catch (e) {
-    print(e);
-  }
+  //   await LocalNotificationService.display(message);
+  // } catch (e) {
+  //   print(e);
+  // }
 }
 
 void main() async {

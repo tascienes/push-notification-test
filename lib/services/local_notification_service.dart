@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationPlugin =
@@ -30,9 +30,6 @@ class LocalNotificationService {
         }
       },
     );
-
-    String? token = await FirebaseMessaging.instance.getToken();
-    print('Token : : : ' + token.toString());
   }
 
   static void requestPermissions() {
@@ -71,7 +68,6 @@ class LocalNotificationService {
           styleInformation: BigPictureStyleInformation(
             FilePathAndroidBitmap(bigPicturePath),
             contentTitle: message.notification?.title,
-            largeIcon: FilePathAndroidBitmap(bigPicturePath),
             summaryText: message.notification?.body,
             htmlFormatTitle: true,
             htmlFormatContent: true,
@@ -100,18 +96,15 @@ class LocalNotificationService {
   static Future<String?> _downloadAndSaveFile(
       String url, String? fileName) async {
     try {
-      var directory = await getTemporaryDirectory();
-      var filePath = '${directory.path}/$fileName';
-      var file = File(filePath);
-      Response<List<int>> response = await Dio()
-          .get<List<int>>(url,
-              options: Options(responseType: ResponseType.bytes))
-          .catchError((onError) {
+      final Directory directory = await getTemporaryDirectory();
+      final String filePath = '${directory.path}/$fileName';
+      final File file = File(filePath);
+      final http.Response response =
+          await http.get(Uri.parse(url)).catchError((onError) {
         print(onError);
       });
-
       if (response.statusCode == HttpStatus.ok) {
-        if (response.data != null) await file.writeAsBytes(response.data!);
+        await file.writeAsBytes(response.bodyBytes);
         return filePath;
       }
       print("File path : $filePath");
